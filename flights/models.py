@@ -29,6 +29,8 @@ class Country(BaseModel):
     class Meta(BaseModel.Meta):
         constraints = [
             models.UniqueConstraint(name="unq_country_iso_alpha2", fields=["iso_alpha2"]),
+        ]
+        indexes = [
             models.Index(name="idx_country_name", fields=["name"]),
         ]
 
@@ -120,6 +122,8 @@ class RouteTripDetail(BaseModel):
                 name="unq_departure_date",
                 fields=["route", "departure_date", "fare_type", "trip_type"],
             ),
+        ]
+        indexes = [
             models.Index(name="idx_departure_date", fields=["departure_date"]),
         ]
 

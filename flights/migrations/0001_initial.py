@@ -68,9 +68,9 @@ class Migration(migrations.Migration):
             model_name="country",
             constraint=models.UniqueConstraint(fields=("iso_alpha2",), name="unq_country_iso_alpha2"),
         ),
-        migrations.AddConstraint(
+        migrations.AddIndex(
             model_name="country",
-            constraint=models.Index(fields=["name"], name="idx_country_name"),
+            index=models.Index(fields=["name"], name="idx_country_name"),
         ),
         migrations.AddField(
             model_name="city",

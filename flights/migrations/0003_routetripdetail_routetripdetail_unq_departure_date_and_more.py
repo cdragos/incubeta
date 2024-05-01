@@ -45,8 +45,8 @@ class Migration(migrations.Migration):
                 fields=("route", "departure_date", "fare_type", "trip_type"), name="unq_departure_date"
             ),
         ),
-        migrations.AddConstraint(
+        migrations.AddIndex(
             model_name="routetripdetail",
-            constraint=models.Index(fields=["departure_date"], name="idx_departure_date"),
+            index=models.Index(fields=["departure_date"], name="idx_departure_date"),
         ),
     ]
