@@ -1,10 +1,10 @@
 from decimal import Decimal
+from http import HTTPStatus
 
 import pytest
+from django.urls import reverse
 
 from flights import models
-from django.urls import reverse
-from http import HTTPStatus
 
 
 @pytest.fixture
@@ -79,7 +79,6 @@ def create_trip_detail(create_route):
     return _create_trip_detail
 
 
-
 @pytest.mark.django_db
 def test_flight_search_view_filters(client, create_route, create_trip_detail):
     create_route(route_code="LAX-BER")
@@ -109,3 +108,39 @@ def test_flight_search_view_filters(client, create_route, create_trip_detail):
     # Test filtering by origin city name, destination city name and valid departure date
     response = client.get(url, {"origin": "New York", "destination": "Frankfurt", "departure_date": "2023-10-05"})
     assert response.status_code == HTTPStatus.OK
+    data = response.json()
+    results = data["results"]
+
+    assert len(results) == 1
+    assert results[0] == {
+        "code": "NYC-FRA",
+        "destination_city": "Frankfurt",
+        "destination_country": "Germany",
+        "destination_station": "FRA",
+        "origin_city": "New York",
+        "origin_station": "JFK",
+        "trip_details": [
+            {
+                "departure_date": "2023-10-05",
+                "destination_url": "",
+                "fare_type": "economy",
+                "lowest_fare": "10.00",
+                "return_date": None,
+                "trip_type": "oneway",
+            },
+            {
+                "departure_date": "2023-10-05",
+                "destination_url": "",
+                "fare_type": "premium",
+                "lowest_fare": "20.00",
+                "return_date": None,
+                "trip_type": "oneway",
+            },
+        ],
+    }
+
+    # Test filtering by origin city name, destination city name and invalid departure date
+    response = client.get(url, {"origin": "New York", "destination": "Frankfurt", "departure_date": "2023-11-05"})
+    assert response.status_code == HTTPStatus.OK
+    data = response.json()
+    assert data == {"results": []}
