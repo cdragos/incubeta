@@ -1,0 +1,29 @@
+FROM python:3.10-slim
+
+# Set the working directory in the container to /app
+WORKDIR /app
+
+# Install UV via pip
+RUN pip install uv
+
+# Create the virtualenv
+RUN uv venv /opt/venv
+
+# Set the environment variable to ensure the virtual environment is activated
+ENV VIRTUAL_ENV=/opt/venv
+ENV PATH="$VIRTUAL_ENV/bin:$PATH"
+
+# Copy the requirements files to the container
+COPY requirements.txt requirements-dev.txt ./
+
+# Install any needed packages specified in requirements.txt and requirements-dev.txt
+RUN uv pip install --no-cache -r requirements.txt -r requirements-dev.txt
+
+# Copy the rest of the application
+COPY . .
+
+# Make port 8000 available to the world outside this container
+EXPOSE 8000
+
+# Run the Django development server
+CMD ["./manage.py", "runserver", "0.0.0.0:8000"]
