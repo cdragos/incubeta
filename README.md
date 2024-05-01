@@ -10,8 +10,6 @@ This is a Django-based Flight Search API that allows users to search for flight 
   - [Option 2: Running with Docker](#option-2-running-with-docker)
 - [Usage](#usage)
 - [Testing](#testing)
-- [Contributing](#contributing)
-- [License](#license)
 
 ## Prerequisites
 
