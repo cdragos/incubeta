@@ -49,6 +49,7 @@ def flight_search_view(request: HttpRequest) -> JsonResponse:
             Exists(trip_details_subquery),
         )
     )
+    # This view is missing pagination which I didn't have time to implement
     results = []
     for route in routes:
         trip_details = [
