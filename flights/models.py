@@ -94,3 +94,34 @@ class Route(BaseModel):
 
     def __str__(self):
         return self.route_code
+
+
+class RouteTripDetail(BaseModel):
+
+    class FareTypes(models.TextChoices):
+        ECONOMY = "economy", "Economy"
+        PREMIUM = "premium", "Premium"
+
+    class TripTypes(models.TextChoices):
+        ONEWAY = "oneway", "One-way"
+        RETURN = "return", "Return"
+
+    route = models.ForeignKey(Route, on_delete=models.CASCADE, related_name="trip_details")
+    departure_date = models.DateField()
+    return_date = models.DateField(null=True, blank=True)
+    fare_type = models.CharField(max_length=20, choices=FareTypes)
+    trip_type = models.CharField(max_length=20, choices=TripTypes)
+    destination_url = models.URLField(max_length=500, blank=True, default="")
+    lowest_fare = models.DecimalField(max_digits=12, decimal_places=2, null=True, blank=True)
+
+    class Meta(BaseModel.Meta):
+        constraints = [
+            models.UniqueConstraint(
+                name="unq_departure_date",
+                fields=["route", "departure_date", "fare_type", "trip_type"],
+            ),
+            models.Index(name="idx_departure_date", fields=["departure_date"]),
+        ]
+
+    def __str__(self):
+        return f"{self.route.route_code} - {self.departure_date}"
