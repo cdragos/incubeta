@@ -3,6 +3,8 @@ from decimal import Decimal
 import pytest
 
 from flights import models
+from django.urls import reverse
+from http import HTTPStatus
 
 
 @pytest.fixture
@@ -49,3 +51,61 @@ def create_route():
         return route
 
     return _create_route
+
+
+@pytest.fixture
+def create_trip_detail(create_route):
+    def _create_trip_detail(
+        route,
+        departure_date,
+        fare_type=models.RouteTripDetail.FareTypes.ECONOMY,
+        trip_type=models.RouteTripDetail.TripTypes.ONEWAY,
+        return_date=None,
+        destination_url="",
+        lowest_fare=None,
+        **kwargs,
+    ):
+        trip_detail = models.RouteTripDetail.objects.create(
+            route=route,
+            departure_date=departure_date,
+            return_date=return_date,
+            fare_type=fare_type,
+            trip_type=trip_type,
+            destination_url=destination_url,
+            lowest_fare=lowest_fare,
+        )
+        return trip_detail
+
+    return _create_trip_detail
+
+
+
+@pytest.mark.django_db
+def test_flight_search_view_filters(client, create_route, create_trip_detail):
+    create_route(route_code="LAX-BER")
+    route_2 = create_route(
+        route_code="NYC-FRA",
+        origin_country_name="United States",
+        origin_country_code="US",
+        destination_country_name="Germany",
+        destination_country_code="DE",
+        origin_city_name="New York",
+        destination_city_name="Frankfurt",
+        origin_station_code="JFK",
+        destination_station_code="FRA",
+    )
+    create_trip_detail(route=route_2, departure_date="2023-10-05", lowest_fare=Decimal("10"))
+    create_trip_detail(
+        route=route_2,
+        departure_date="2023-10-05",
+        fare_type=models.RouteTripDetail.FareTypes.PREMIUM,
+        trip_type=models.RouteTripDetail.TripTypes.ONEWAY,
+        lowest_fare=Decimal("20"),
+    )
+
+    # URL for the flight search view
+    url = reverse("flight_search")
+
+    # Test filtering by origin city name, destination city name and valid departure date
+    response = client.get(url, {"origin": "New York", "destination": "Frankfurt", "departure_date": "2023-10-05"})
+    assert response.status_code == HTTPStatus.OK
