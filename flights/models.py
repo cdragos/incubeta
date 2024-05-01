@@ -60,3 +60,37 @@ class Station(BaseModel):
 
     def __str__(self):
         return self.code
+
+
+class Route(BaseModel):
+
+    # Currency for this route, ForeignKey to Currency model (e.g., "DKK")
+    currency = models.ForeignKey(Currency, on_delete=models.PROTECT)
+    # Destination city of the route, linked to the City model
+    destination_city = models.ForeignKey(City, on_delete=models.PROTECT, related_name="destination_city_routes")
+    # Destination country of the route, linked to the Country model
+    destination_country = models.ForeignKey(
+        Country, on_delete=models.PROTECT, related_name="destination_country_routes"
+    )
+    # Destination station of the route, linked to the Station model
+    destination_station = models.ForeignKey(
+        Station, on_delete=models.PROTECT, related_name="destination_stating_routes"
+    )
+    # Origin city of the route, linked to the City model
+    origin_city = models.ForeignKey(City, on_delete=models.PROTECT, related_name="origin_city_routes")
+    # Origin country of the route, linked to the Country model
+    origin_country = models.ForeignKey(Country, on_delete=models.PROTECT, related_name="origin_country_routes")
+    # Origin station of the route, linked to the Station model
+    origin_station = models.ForeignKey(Station, on_delete=models.PROTECT, related_name="origin_stating_routes")
+    # Image URL of the destination city, optional (e.g., "https://example.com/image.jpg")
+    destination_city_image_url = models.URLField(max_length=500, blank=True, default="")
+    # Unique route identifier (e.g., "ESB-IKA")
+    route_code = models.CharField(max_length=100)
+
+    class Meta(BaseModel.Meta):
+        constraints = [
+            models.UniqueConstraint(name="unq_route_route_code", fields=["route_code"]),
+        ]
+
+    def __str__(self):
+        return self.route_code
