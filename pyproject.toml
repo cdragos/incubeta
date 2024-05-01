@@ -8,3 +8,31 @@ dependencies = ["Django>=5.0.4, <6", "python-dateutil>=2.9.0, <3"]
 
 [project.optional-dependencies]
 testing = ["pytest-django", "pre-commit"]
+
+[tool.black]
+line-length = 120
+include = '\.pyi?$'
+exclude = '''
+/(
+    \.git
+  | \.mypy_cache
+  | \.venv
+)/
+'''
+
+[tool.ruff.lint]
+# pyflakes, pycodestyle, isort
+select = ["F", "E", "W", "I001"]
+ignore-init-module-imports = true
+
+ignore = [
+    "E402", # module-import-not-at-top-of-file
+    "E501", # line-too-long (black handles this)
+    "E711", # none-comparison
+    "E712", # true-false-comparison
+]
+
+exclude = [".venv", ".git", ".mypy_cache", ".ruff_cache", ".venv"]
+
+[tool.ruff.lint.isort]
+known-third-party = ["django", "dateutil"]
