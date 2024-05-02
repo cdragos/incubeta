@@ -36,6 +36,7 @@ pip install uv
 
 ```shell
 uv venv
+source .venv/bin/activate
 ```
 
 #### Compile the project dependencies:
@@ -83,6 +84,18 @@ docker compose exec web bash
 ```shell
 docker compose exec web python manage.py migrate
 ```
+
+## Usage
+### Data Synchronization
+
+To keep the flight route data up-to-date, we use a Django management command to import data from a CSV file. This can be executed as follows:
+
+shell```
+python manage.py sync_routes_data file_2.csv --batch-size=100
+```
+
+This command processes the CSV file in batches of 100 records at a time, ensuring efficient data handling and database performance.
+
 
 ## Testing
 
