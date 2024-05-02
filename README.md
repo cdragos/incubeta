@@ -90,7 +90,7 @@ docker compose exec web python manage.py migrate
 
 To keep the flight route data up-to-date, we use a Django management command to import data from a CSV file. This can be executed as follows:
 
-shell```
+```shell
 python manage.py sync_routes_data file_2.csv --batch-size=100
 ```
 
